@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+    <title>ILLiad - Article Request</title>
+    <script type="text/javascript" src="js/DOIResolver.js?v=1.4" defer></script>
+    <style>
+        /* =============================================
+           UNC BRAND COLORS
+           - Carolina Blue: #4B9CD3
+           - Navy:          #13294B
+           ============================================= */
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Franklin Gothic Medium', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #13294B;
+        }
+
+        /* --- Header --- */
+        .unc-header {
+            background: #13294B;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .unc-logo-circle {
+            width: 44px;
+            height: 44px;
+            background: #4B9CD3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: -1px;
+            flex-shrink: 0;
+        }
+        .unc-header-text .site-name { font-size: 15px; font-weight: 600; color: #fff; }
+        .unc-header-text .site-sub  { font-size: 11px; color: #9BB5CE; margin-top: 1px; }
+
+        /* --- Navigation --- */
+        .unc-nav {
+            background: #4B9CD3;
+            padding: 0 1.5rem;
+            display: flex;
+        }
+        .unc-nav a {
+            display: inline-block;
+            padding: 9px 16px;
+            font-size: 13px;
+            color: #fff;
+            text-decoration: none;
+            border-right: 0.5px solid rgba(255,255,255,0.2);
+        }
+        .unc-nav a:hover  { background: rgba(255,255,255,0.15); }
+        .unc-nav a.active { background: #13294B; font-weight: 600; }
+
+        /* --- Breadcrumb --- */
+        .unc-breadcrumb {
+            background: #fff;
+            border-bottom: 0.5px solid #ddd;
+            padding: 8px 1.5rem;
+            font-size: 12px;
+            color: #666;
+        }
+        .unc-breadcrumb a { color: #4B9CD3; text-decoration: none; }
+        .unc-breadcrumb a:hover { text-decoration: underline; }
+
+        /* --- Main wrapper --- */
+        .container { padding: 1.5rem; max-width: 960px; width: 100%; }
+
+        /* --- Page heading row --- */
+        .page-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 3px solid #4B9CD3;
+        }
+        .page-header { font-size: 22px; font-weight: 600; color: #13294B; }
+        .required-legend { font-size: 12px; color: #666; }
+        .required-legend .star { color: #c0392b; font-weight: 700; }
+
+        /* --- Rapid delivery banner --- */
+        .rapid-banner {
+            background: #f5c6c6;
+            border: 1.5px solid #c0392b;
+            border-radius: 6px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+        .rapid-banner-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        .rapid-banner-title { font-size: 14px; font-weight: 700; color: #13294B; margin-bottom: 4px; }
+        .rapid-banner-desc { font-size: 12px; color: #444; line-height: 1.5; }
+        .btn-journal-list {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 5px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            border-radius: 20px;
+            background: #555;
+            color: #fff;
+            cursor: pointer;
+        }
+        .rapid-select {
+            padding: 6px 10px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #fff;
+            color: #13294B;
+            font-family: inherit;
+            min-width: 200px;
+        }
+        .rapid-note { font-size: 12px; color: #444; margin-top: 8px; line-height: 1.5; }
+        .rapid-note a { color: #4B9CD3; font-weight: 600; }
+
+        /* --- Optional section --- */
+        .optional-section {
+            border: 1.5px dashed #C5DCF0;
+            border-radius: 8px;
+            padding: 1.25rem 1.25rem 0.75rem;
+            margin-bottom: 2rem;
+            background: #FAFCFF;
+            position: relative;
+        }
+        .optional-section-badge {
+            position: absolute;
+            top: -11px;
+            left: 16px;
+            background: #fff;
+            border: 1.5px dashed #C5DCF0;
+            border-radius: 20px;
+            padding: 2px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #4B9CD3;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+        .optional-hint { font-size: 12px; color: #444; margin-bottom: 1rem; line-height: 1.5; }
+        .doi-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1.5rem; }
+
+        /* --- Form rows (label left, input right) --- */
+        .form-row {
+            display: grid;
+            grid-template-columns: minmax(180px, 280px) 1fr;
+            gap: 0 1.5rem;
+            align-items: start;
+            padding: 10px 0;
+            border-bottom: 0.5px solid #eee;
+        }
+        .form-row:last-child { border-bottom: none; }
+        .form-label { font-size: 13px; font-weight: 600; color: #13294B; padding-top: 8px; }
+        .form-label .star { color: #c0392b; font-weight: 700; margin-right: 3px; }
+        .form-label .sub { display: block; font-size: 11px; color: #444; font-weight: 400; margin-top: 3px; }
+        .form-label .sub-bold { display: block; font-size: 11px; color: #13294B; font-weight: 700; margin-top: 3px; }
+
+        /* --- Inputs --- */
+        input[type="text"], textarea, select {
+            width: 100%;
+            padding: 7px 10px;
+            font-size: 13px;
+            border: 1px solid #bbb;
+            border-radius: 3px;
+            background: #fff;
+            color: #13294B;
+            font-family: inherit;
+        }
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #4B9CD3;
+            box-shadow: 0 0 0 3px rgba(75,156,211,0.15);
+        }
+        textarea { resize: vertical; min-height: 54px; }
+
+        /* --- Section labels --- */
+        .section { margin-bottom: 1.5rem; }
+        .section-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4B9CD3;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+            padding-bottom: 5px;
+            border-bottom: 0.5px solid #C5DCF0;
+        }
+
+        /* --- Badges --- */
+        .badge-optional {
+            display: inline-block;
+            background: #EAF4FB;
+            color: #4B9CD3;
+            border: 1px solid #C5DCF0;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 20px;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        /* --- Lookup / OA buttons --- */
+        .btn-doi {
+            background: #4B9CD3;
+            color: #fff;
+            border: none;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 7px;
+        }
+        .btn-doi:hover { background: #3A8AC0; }
+        .btn-oa {
+            background: #fff;
+            color: #4B9CD3;
+            border: 2px solid #4B9CD3;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 7px;
+        }
+        .btn-oa:hover { background: #EAF4FB; }
+
+        /* --- Error / note text --- */
+        .error-msg { font-size: 12px; color: #c0392b; display: block; margin-top: 4px; }
+        .small-notes { display: block; font-size: 11px; color: #444; margin-top: 2px; font-weight: 400; }
+
+        /* --- Submit row --- */
+        .submit-row {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            padding-top: 1rem;
+            border-top: 0.5px solid #C5DCF0;
+            margin-top: 1rem;
+        }
+        .btn-submit {
+            padding: 9px 22px;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            border-radius: 4px;
+            background: #13294B;
+            color: #fff;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .btn-submit:hover { background: #0d1e38; }
+        .btn-clear, .btn-cancel-req {
+            padding: 9px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border: 1px solid #999;
+            border-radius: 4px;
+            background: #555;
+            color: #fff;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* --- Responsive --- */
+
+        /* 태블릿 (900px 이하) */
+        @media (max-width: 900px) {
+            .container { padding: 1rem; }
+            .rapid-banner-top { flex-direction: column; gap: 0.75rem; }
+            .rapid-select { width: 100%; min-width: unset; }
+            .doi-row { grid-template-columns: 1fr; gap: 1rem 0; }
+        }
+
+        /* 모바일 (600px 이하) */
+        @media (max-width: 600px) {
+            .unc-nav a { padding: 9px 10px; font-size: 12px; }
+            .page-header { font-size: 18px; }
+            .page-header-row { flex-direction: column; gap: 4px; }
+            .form-row { grid-template-columns: 1fr; gap: 4px 0; }
+            .form-label { padding-top: 4px; }
+            .submit-row { flex-direction: column; align-items: stretch; }
+            .submit-row button, .submit-row input { text-align: center; }
+        }
+
+        /* --- Footer --- */
+        .unc-footer {
+            background: #13294B;
+            color: #9BB5CE;
+            font-size: 11px;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .unc-footer a { color: #4B9CD3; text-decoration: none; }
+    </style>
+</head>
+
+<body>
+
+    <!-- UNC Header -->
+    <div class="unc-header">
+        <div class="unc-logo-circle">UNC</div>
+        <div class="unc-header-text">
+            <div class="site-name">University Libraries</div>
+            <div class="site-sub">University of North Carolina at Chapel Hill</div>
+        </div>
+    </div>
+
+    <!-- UNC Navigation -->
+    <div class="unc-nav">
+        <a href="#" class="active">ILLiad</a>
+        <a href="#">My Account</a>
+        <a href="#">Request History</a>
+        <a href="#">Help</a>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="unc-breadcrumb">
+        <a href="#">Home</a> &rsaquo; <a href="#">ILLiad</a> &rsaquo; Article Request
+    </div>
+
+    <div class="container">
+        <main id="content" aria-label="Content">
+            <form action="illiad.dll" method="post" name="ArticleRequest">
+                <input type="hidden" name="ILLiadForm" value="ArticleRequest">
+
+                <fieldset style="border:none;">
+
+                    <!-- Page heading -->
+                    <div class="page-header-row">
+                        <h2 class="page-header">Article Request</h2>
+                        <span class="required-legend"><span class="star">*</span> Indicates required field</span>
+                    </div>
+
+                    <!-- Rapid Delivery Banner -->
+                    <div class="rapid-banner">
+                        <div class="rapid-banner-top">
+                            <div>
+                                <div class="rapid-banner-title">Need rapid delivery of an article?</div>
+                                <div class="rapid-banner-desc">
+                                    Click the link below to verify article is published in an eligible journal.<br>
+                                    Once verified, use the drop-down to indicate rapid delivery is needed.
+                                </div>
+                                <button type="button" class="btn-journal-list">List of eligible journals</button>
+                            </div>
+                            <select class="rapid-select" name="ServiceType">
+                                <option>Standard: 1-3 business days</option>
+                                <option>Urgent: 0-4 hours</option>
+                            </select>
+                        </div>
+                        <div class="rapid-note">
+                            In order to qualify for Urgent (0-4 hour) delivery, <strong>you must enter <a href="#">the journal's ISSN from this list</a> in the ISSN field below.</strong>
+                        </div>
+                    </div>
+
+                    <!-- Optional: DOI / PubMed ID -->
+                    <div class="optional-section">
+                        <div class="optional-section-badge">Optional — auto-fill shortcuts</div>
+                        <p class="optional-hint">If you have a DOI or PubMed ID, enter it below to auto-fill the citation fields. You can also fill in the article information manually.</p>
+
+                        <div class="doi-row">
+                            <div>
+                                <label for="DOI" style="font-size:13px;font-weight:600;color:#13294B;margin-bottom:4px;display:block;">
+                                    DOI <span class="badge-optional">Optional</span>
+                                    <span class="small-notes">Please double check your citation information after looking up the DOI.</span>
+                                </label>
+                                <input type="text" name="DOI" id="DOI" value="" placeholder="e.g. 10.1000/xyz123">
+                                <button type="button" id="doibutton" class="btn-doi" onclick="resolveDOI()">Look Up DOI</button><br>
+                                <span class="error-msg" id="doierrormessage"></span>
+                            </div>
+                            <div>
+                                <label for="PMID" style="font-size:13px;font-weight:600;color:#13294B;margin-bottom:4px;display:block;">
+                                    PubMed ID <span class="badge-optional">Optional</span>
+                                    <span class="small-notes">Please double check your citation information after looking up the PubMed ID.</span>
+                                </label>
+                                <input type="text" name="PMID" id="PMID" value="" placeholder="e.g. 12345678">
+                                <button type="button" id="pmidbutton" class="btn-doi" onclick="resolvePMID()">Look Up PubMed ID</button><br>
+                                <span class="error-msg" id="pmiderrormessage"></span>
+                            </div>
+                        </div>
+
+                        <div aria-live="polite">
+                            <div id="oaloading" style="display:none;margin-top:10px;">
+                                <span class="small-notes">Looking up Open Access...</span>
+                            </div>
+                            <div id="openaccessdiv" style="display:none;margin-top:10px;">
+                                <span class="small-notes">* If the article is available via Open Access, click:</span><br>
+                                <button type="button" class="btn-oa" id="openaccessbutton">View Open Access Version</button><br>
+                                <span class="small-notes">Be sure to double-check that your citation information matches your exact request.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Article information -->
+                    <div class="section">
+                        <div class="section-label">Article information</div>
+
+                        <div class="form-row">
+                            <div class="form-label">
+                                <span class="star">*</span>Title (Journal, Conference Proceedings, Anthology)
+                                <span class="sub">Please do not abbreviate unless your citation is abbreviated.</span>
+                            </div>
+                            <textarea name="PhotoJournalTitle" id="PhotoJournalTitle" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label"><span class="star">*</span>Volume</div>
+                            <input type="text" name="PhotoJournalVolume" id="PhotoJournalVolume" value="">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label">Issue Number</div>
+                            <input type="text" name="PhotoJournalIssue" id="PhotoJournalIssue" value="">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label">Month</div>
+                            <input type="text" name="PhotoJournalMonth" id="PhotoJournalMonth" value="">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label"><span class="star">*</span>Year</div>
+                            <input type="text" name="PhotoJournalYear" id="PhotoJournalYear" value="">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label"><span class="star">*</span>Inclusive Pages</div>
+                            <input type="text" name="PhotoJournalInclusivePages" id="PhotoJournalInclusivePages" value="">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label">Article Author</div>
+                            <input type="text" name="PhotoArticleAuthor" id="PhotoArticleAuthor" value="">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label"><span class="star">*</span>Article Title</div>
+                            <textarea name="PhotoArticleTitle" id="PhotoArticleTitle" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Additional identifiers -->
+                    <div class="section">
+                        <div class="section-label">Additional identifiers</div>
+
+                        <div class="form-row">
+                            <div class="form-label">
+                                ISSN/ISBN
+                                <span class="sub">(International Standard Serial/Book Number)</span>
+                                <span class="sub-bold">This field must be filled if requesting rapid delivery.</span>
+                            </div>
+                            <input type="text" name="ISSN" id="ISSN" value="">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label">OCLC/WorldCat Accession Number</div>
+                            <input type="text" name="ESPNumber" id="ESPNumber" value="">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label">
+                                Not Wanted After Date
+                                <span class="sub">(MM/DD/YYYY)</span>
+                            </div>
+                            <input type="text" name="NotWantedAfter" id="NotWantedAfter" value="">
+                        </div>
+                    </div>
+
+                    <!-- Additional information -->
+                    <div class="section">
+                        <div class="section-label">Additional information</div>
+
+                        <div class="form-row">
+                            <div class="form-label">
+                                Notes
+                                <span class="sub">Put any information here that may help us find the item, as well as any other pertinent information.</span>
+                            </div>
+                            <textarea name="Notes" id="Notes" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-label">
+                                Where did you find this item cited?
+                                <span class="sub">Examples are Academic Search Premier, LexisNexis, or a specific journal or book.</span>
+                            </div>
+                            <textarea name="CitedIn" id="CitedIn" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit buttons -->
+                    <div class="submit-row">
+                        <input type="submit" class="btn-submit" value="Submit Request">
+                        <button type="reset" class="btn-clear">Clear Form</button>
+                        <button type="button" class="btn-cancel-req" onclick="history.back()">Cancel Request</button>
+                    </div>
+
+                </fieldset>
+            </form>
+        </main>
+    </div>
+
+    <!-- UNC Footer -->
+    <div class="unc-footer">
+        University of North Carolina at Chapel Hill &mdash; University Libraries &mdash; <a href="#">ILLiad Help</a>
+    </div>
+
+</body>
+</html>
